@@ -1,15 +1,35 @@
 package net.trajano.commons.test;
 
+import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import javax.xml.bind.DatatypeConverter;
 
 import net.trajano.commons.filevisitor.RemoveEmptyFoldersVisitor;
 import net.trajano.commons.filevisitor.RemoveFoldersVisitor;
+import net.trajano.commons.io.FilesUtil;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class FilesTest {
+	@Test
+	public void testDigest() throws Exception {
+		final byte[] nullDigest = DatatypeConverter
+				.parseHexBinary("d41d8cd98f00b204e9800998ecf8427e");
+		final Path file = Paths.get("target/empty");
+		final OutputStream os = Files.newOutputStream(file);
+		try {
+			os.close();
+			Assert.assertTrue(FilesUtil.verifyDigest(file, "MD5", nullDigest));
+		} finally {
+			Files.deleteIfExists(file);
+		}
+
+	}
+
 	@Test
 	public void testEmptyFolderWalker() throws Exception {
 		Files.createDirectories(Paths
